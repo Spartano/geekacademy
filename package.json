@@ -3,7 +3,8 @@
     "express": "^4.17.1",
     "git": "^0.1.5",
     "lodash": "^4.17.21",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "morgan": "^1.10.0"
   },
   "scripts": {
     "start": "nodemon server.js"
