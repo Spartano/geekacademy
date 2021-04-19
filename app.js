@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
-
+const _ = require("lodash");
+const { randomBytes } = require("crypto");
 // express app
 const app = express();
 
@@ -13,18 +14,7 @@ app.set("view engine", "ejs");
 // middleware & static files
 app.use(express.static("public"));
 
-app.use((req, res, next) => {
-  console.log("new request made:");
-  console.log("host: ", req.hostname);
-  console.log("path: ", req.path);
-  console.log("method: ", req.method);
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("in the next middleware");
-  next();
-});
+app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
@@ -33,21 +23,51 @@ app.use((req, res, next) => {
   next();
 });
 
+// routes
 app.get("/", (req, res) => {
-  const blogs = [
-    { title: "Yoshi finds eggs", snippet: "Lorem ipsum dolor sit amet consectetur" },
-    { title: "Mario finds stars", snippet: "Lorem ipsum dolor sit amet consectetur" },
-    { title: "How to defeat bowser", snippet: "Lorem ipsum dolor sit amet consectetur" },
-  ];
-  res.render("index", { title: "Home", blogs });
+  res.redirect("/blogs");
 });
 
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
 });
 
+// blog routes
 app.get("/blogs/create", (req, res) => {
   res.render("create", { title: "Create a new blog" });
+});
+
+//si azzera ad ogni riavvio del server
+const blogs = [];
+
+app.get("/blogs", (req, res) => {
+  res.render("index", { blogs, title: "All blogs" });
+});
+
+app.post("/blogs", (req, res) => {
+  // console.log(req.body);
+  const blog = req.body;
+
+  blog.id = randomBytes(4).toString("hex");
+  blogs.push(blog);
+
+  res.redirect("/blogs");
+});
+
+app.get("/blogs/:id", (req, res) => {
+  const id = req.params.id;
+  const blog = blogs.find((blog) => blog.id === id);
+
+  res.render("details", { blog, title: "Blog Details" });
+});
+
+app.delete("/blogs/:id", (req, res) => {
+  const id = req.params.id;
+  _.remove(blogs, function (blog) {
+    return blog.id === id;
+  });
+
+  res.json({ redirect: "/blogs" });
 });
 
 // 404 page
