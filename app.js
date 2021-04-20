@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const app = express();
 
@@ -8,6 +9,25 @@ app.listen(3000, () => {
 
 // register view engine
 app.set("view engine", "ejs");
+
+/*
+Middleware casalinghi
+app.use((req, res, next) => {
+    console.log("sono prima della route");
+    // authentication
+    // se non é autenticato res.redirect
+    next();
+});
+
+app.use((req, res, next) => {
+    console.log("sono secondo della route");
+    next();
+});
+*/
+
+app.use(express.static("public")); // 
+
+app.use(morgan("dev"));
 
 /*
 nuova route 
