@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
-const _ = require("lodash");
-const { randomBytes } = require("crypto");
+const blogRoutes = require("./routes/blogRoutes");
+
 // express app
 const app = express();
 
@@ -33,42 +33,7 @@ app.get("/about", (req, res) => {
 });
 
 // blog routes
-app.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Create a new blog" });
-});
-
-//si azzera ad ogni riavvio del server
-const blogs = [];
-
-app.get("/blogs", (req, res) => {
-  res.render("index", { blogs, title: "All blogs" });
-});
-
-app.post("/blogs", (req, res) => {
-  // console.log(req.body);
-  const blog = req.body;
-
-  blog.id = randomBytes(4).toString("hex");
-  blogs.push(blog);
-
-  res.redirect("/blogs");
-});
-
-app.get("/blogs/:id", (req, res) => {
-  const id = req.params.id;
-  const blog = blogs.find((blog) => blog.id === id);
-
-  res.render("details", { blog, title: "Blog Details" });
-});
-
-app.delete("/blogs/:id", (req, res) => {
-  const id = req.params.id;
-  _.remove(blogs, function (blog) {
-    return blog.id === id;
-  });
-
-  res.json({ redirect: "/blogs" });
-});
+app.use(blogRoutes);
 
 // 404 page
 app.use((req, res) => {
