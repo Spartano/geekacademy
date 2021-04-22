@@ -1,12 +1,23 @@
 const express = require("express");
 const morgan = require("morgan");
 const blogRoutes = require("./routes/blogRoutes");
-
+var mongoose = require("mongoose");
 // express app
 const app = express();
 
-// listen for requests
-app.listen(3000);
+// connect to mongodb & listen for requests
+const dbURI = "mongodb+srv://admin:root@cluster0.ilmdp.mongodb.net/test";
+
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((result) => {
+    // listen for requests
+
+    app.listen(3000, () => {
+      console.log("connection established");
+    });
+  })
+  .catch((err) => console.log(err));
 
 // register view engine
 app.set("view engine", "ejs");

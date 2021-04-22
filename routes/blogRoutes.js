@@ -1,12 +1,20 @@
 const express = require("express");
 const { randomBytes } = require("crypto");
 const _ = require("lodash");
+const Blog = require("../model/blog");
 
 const router = express.Router();
 const blogs = [];
 
 router.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Create a new blog" });
+  Blog.find()
+    .sort({ createdAt: -1 })
+    .then((result) => {
+      res.render("index", { blogs: result, title: "All blogs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 //si azzera ad ogni riavvio del server
