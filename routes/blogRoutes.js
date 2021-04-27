@@ -1,46 +1,53 @@
 const express = require("express");
 const router = express.Router();
-const { randomBytes } = require("crypto");
-const _ = require("lodash");
-
-const blogs = [];
+const Blog = require("../model/Blog");
 
 router.get("/blogs", (req, res) => {
-  res.render("index", {
-    title: "super mario",
-    blogs,
-  });
+  Blog.find()
+    .sort({ createdAt: -1 })
+    .then((result) => {
+      res.render("index", { blogs: result, title: "All blogs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 router.post("/blogs", (req, res) => {
-  const data = req.body;
+  // console.log(req.body);
+  const blog = new Blog(req.body);
 
-  data.id = randomBytes(4).toString("hex");
-  blogs.push(data);
-
-  res.redirect("/blogs");
-});
-
-router.get("/blogs/create", (req, res) => {
-  res.render("create", { title: "Super mario" });
+  blog
+    .save()
+    .then((result) => {
+      res.redirect("/blogs");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 router.get("/blogs/:id", (req, res) => {
   const id = req.params.id;
-
-  const blog = blogs.find((blog) => blog.id === id);
-
-  res.render("details", { blog, title: "Blog Details" });
+  Blog.findById(id)
+    .then((result) => {
+      res.render("details", { blog: result, title: "Blog Details" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 router.delete("/blogs/:id", (req, res) => {
   const id = req.params.id;
 
-  _.remove(blogs, function (blog) {
-    return blog.id === id;
-  });
-
-  res.json({ redirect: "/blogs" });
+  Blog.findByIdAndDelete(id)
+    .then((result) => {
+      res.json({ redirect: "/blogs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 module.exports = router;

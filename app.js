@@ -1,11 +1,21 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const morgan = require("morgan");
 const app = express();
 const blogRoutes = require("./routes/blogRoutes");
 
-app.listen(3000, () => {
-  console.log("sto girando sulla porta 3000");
-});
+const dbURI = "mongodb+srv://admin:root@cluster0.ilmdp.mongodb.net/test";
+
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((result) => {
+    // listen for requests
+
+    app.listen(3000, () => {
+      console.log("connection established");
+    });
+  })
+  .catch((err) => console.log(err));
 
 // register view engine
 app.set("view engine", "ejs");
@@ -20,26 +30,6 @@ app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.redirect("/blogs");
-});
-
-const clienti = [1, 2, 3];
-
-app.get("/customers", (req, res) => {
-  res.json({ clienti });
-});
-
-app.post("/customers", (req, res) => {
-  const data = req.body;
-  clienti.push(data);
-
-  res.json({ clienti });
-});
-
-app.delete("/customers/:id", (req, res) => {
-  const data = req.params.id;
-  clienti.push(data);
-
-  res.json({ clienti });
 });
 
 app.use(blogRoutes);
