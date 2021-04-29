@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const blogRoutes = require("./routes/blogRoutes");
+const timeStampRoutes = require("./routes/timestamp");
 
 // register view engine
 app.set("view engine", "ejs");
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(blogRoutes);
+app.use(timeStampRoutes);
 
 app.get("/about", (req, res) => {
   res.render("about", { title: "Super mario" });
